@@ -7,46 +7,19 @@
 <style>
   /* ===== THEME VARIABLES ===== */
   :root {
-    --bg:          #fdf6f0;
-    --primary:     #c0392b;
-    --primary-dk:  #96281b;
-    --border:      #e8d5d0;
-    --badge-bg:    #f0ebe8;
-    --badge-text:  #7a5a50;
-    --link-line:   #e8b8b2;
-    --pill-bg:     #fdf6f0;
-    --pill-border: #e8d5d0;
-    --pill-hover:  #f5e6e0;
-    --dot:         #c0392b;
+    --bg:          #f0f4ff;
+    --primary:     #1565c0;
+    --primary-dk:  #0d47a1;
+    --border:      #bbdefb;
+    --badge-bg:    #e3f2fd;
+    --badge-text:  #0d47a1;
+    --link-line:   #90caf9;
+    --pill-bg:     #f0f4ff;
+    --pill-border: #bbdefb;
+    --pill-hover:  #e3f2fd;
+    --dot:         #1565c0;
   }
 
-  /* ===== THEME SWITCHER BAR ===== */
-  .theme-bar {
-    background: rgba(0,0,0,0.18);
-    padding: 6px 20px;
-  }
-  .theme-bar-inner {
-    max-width: 900px;
-    margin: 0 auto;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    flex-wrap: wrap;
-  }
-  .theme-bar span {
-    font-size: 0.7rem;
-    color: rgba(255,255,255,0.7);
-    margin-right: 4px;
-  }
-  .theme-swatch {
-    width: 20px; height: 20px;
-    border-radius: 50%;
-    border: 2px solid rgba(255,255,255,0.4);
-    cursor: pointer;
-    transition: transform 0.15s, border-color 0.15s;
-  }
-  .theme-swatch:hover { transform: scale(1.2); }
-  .theme-swatch.active { border-color: white; transform: scale(1.25); }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -343,17 +316,6 @@
 <body>
 
 <header class="site-header">
-  <div class="theme-bar">
-    <div class="theme-bar-inner">
-      <span>色調</span>
-      <div class="theme-swatch active" data-theme="red"    style="background:#c0392b" title="深紅（原版）"></div>
-      <div class="theme-swatch"        data-theme="pink"   style="background:#c2185b" title="🌸 櫻花粉"></div>
-      <div class="theme-swatch"        data-theme="blue"   style="background:#1565c0" title="🌊 海洋藍"></div>
-      <div class="theme-swatch"        data-theme="green"  style="background:#2e7d32" title="🎋 抹茶綠"></div>
-      <div class="theme-swatch"        data-theme="navy"   style="background:#283593" title="🌃 夜空深藍"></div>
-      <div class="theme-swatch"        data-theme="orange" style="background:#e65100" title="🍂 楓葉橘"></div>
-    </div>
-  </div>
   <div class="header-top">
     <span class="torii">⛩️</span>
     <div>
@@ -1083,44 +1045,6 @@
 </main>
 
 <script>
-  const THEMES = {
-    red:    { bg:'#fdf6f0', primary:'#c0392b', dk:'#96281b', border:'#e8d5d0', badgeBg:'#f0ebe8', badgeText:'#7a5a50', linkLine:'#e8b8b2', pillBg:'#fdf6f0', pillBorder:'#e8d5d0', pillHover:'#f5e6e0' },
-    pink:   { bg:'#fff0f6', primary:'#c2185b', dk:'#880e4f', border:'#f8bbd0', badgeBg:'#fce4ec', badgeText:'#880e4f', linkLine:'#f48fb1', pillBg:'#fff0f6', pillBorder:'#f8bbd0', pillHover:'#fce4ec' },
-    blue:   { bg:'#f0f4ff', primary:'#1565c0', dk:'#0d47a1', border:'#bbdefb', badgeBg:'#e3f2fd', badgeText:'#0d47a1', linkLine:'#90caf9', pillBg:'#f0f4ff', pillBorder:'#bbdefb', pillHover:'#e3f2fd' },
-    green:  { bg:'#f1f8f1', primary:'#2e7d32', dk:'#1b5e20', border:'#c8e6c9', badgeBg:'#e8f5e9', badgeText:'#1b5e20', linkLine:'#a5d6a7', pillBg:'#f1f8f1', pillBorder:'#c8e6c9', pillHover:'#e8f5e9' },
-    navy:   { bg:'#f0f2ff', primary:'#283593', dk:'#1a237e', border:'#c5cae9', badgeBg:'#e8eaf6', badgeText:'#1a237e', linkLine:'#9fa8da', pillBg:'#f0f2ff', pillBorder:'#c5cae9', pillHover:'#e8eaf6' },
-    orange: { bg:'#fff8f0', primary:'#e65100', dk:'#bf360c', border:'#ffccbc', badgeBg:'#fbe9e7', badgeText:'#bf360c', linkLine:'#ffab91', pillBg:'#fff8f0', pillBorder:'#ffccbc', pillHover:'#fbe9e7' },
-  };
-
-  function applyTheme(name) {
-    const t = THEMES[name];
-    if (!t) return;
-    const r = document.documentElement.style;
-    r.setProperty('--bg',          t.bg);
-    r.setProperty('--primary',     t.primary);
-    r.setProperty('--primary-dk',  t.dk);
-    r.setProperty('--border',      t.border);
-    r.setProperty('--badge-bg',    t.badgeBg);
-    r.setProperty('--badge-text',  t.badgeText);
-    r.setProperty('--link-line',   t.linkLine);
-    r.setProperty('--pill-bg',     t.pillBg);
-    r.setProperty('--pill-border', t.pillBorder);
-    r.setProperty('--pill-hover',  t.pillHover);
-    r.setProperty('--dot',         t.primary);
-    document.querySelectorAll('.theme-swatch').forEach(s => {
-      s.classList.toggle('active', s.dataset.theme === name);
-    });
-    localStorage.setItem('theme', name);
-  }
-
-  document.querySelectorAll('.theme-swatch').forEach(s => {
-    s.addEventListener('click', () => applyTheme(s.dataset.theme));
-  });
-
-  // Restore saved theme
-  const saved = localStorage.getItem('theme');
-  if (saved && THEMES[saved]) applyTheme(saved);
-
   function showDay(index) {
     document.querySelectorAll('.day-panel').forEach((p, i) => {
       p.classList.toggle('active', i === index);
