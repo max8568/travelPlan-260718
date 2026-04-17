@@ -5,18 +5,61 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>東京旅遊計畫 7/18–7/25</title>
 <style>
+  /* ===== THEME VARIABLES ===== */
+  :root {
+    --bg:          #fdf6f0;
+    --primary:     #c0392b;
+    --primary-dk:  #96281b;
+    --border:      #e8d5d0;
+    --badge-bg:    #f0ebe8;
+    --badge-text:  #7a5a50;
+    --link-line:   #e8b8b2;
+    --pill-bg:     #fdf6f0;
+    --pill-border: #e8d5d0;
+    --pill-hover:  #f5e6e0;
+    --dot:         #c0392b;
+  }
+
+  /* ===== THEME SWITCHER BAR ===== */
+  .theme-bar {
+    background: rgba(0,0,0,0.18);
+    padding: 6px 20px;
+  }
+  .theme-bar-inner {
+    max-width: 900px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .theme-bar span {
+    font-size: 0.7rem;
+    color: rgba(255,255,255,0.7);
+    margin-right: 4px;
+  }
+  .theme-swatch {
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.4);
+    cursor: pointer;
+    transition: transform 0.15s, border-color 0.15s;
+  }
+  .theme-swatch:hover { transform: scale(1.2); }
+  .theme-swatch.active { border-color: white; transform: scale(1.25); }
+
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
   body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans TC", sans-serif;
-    background: #fdf6f0;
+    background: var(--bg);
     color: #2d2d2d;
     min-height: 100vh;
   }
 
   /* Header */
   .site-header {
-    background: linear-gradient(135deg, #c0392b 0%, #96281b 100%);
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dk) 100%);
     color: white;
     padding: 24px 20px 0;
     box-shadow: 0 2px 12px rgba(0,0,0,0.2);
@@ -70,10 +113,10 @@
   }
   .tab-btn:hover { background: rgba(255,255,255,0.25); color: white; }
   .tab-btn.active {
-    background: #fdf6f0;
-    color: #c0392b;
+    background: var(--bg);
+    color: var(--primary);
     font-weight: 700;
-    border-bottom: 3px solid #fdf6f0;
+    border-bottom: 3px solid var(--bg);
   }
   .tab-btn .day-num { font-size: 0.65rem; opacity: 0.8; display: block; }
   .tab-btn .day-label { font-size: 0.82rem; display: block; }
@@ -91,10 +134,10 @@
   .day-title {
     font-size: 1.2rem;
     font-weight: 700;
-    color: #c0392b;
+    color: var(--primary);
     margin-bottom: 20px;
     padding-bottom: 10px;
-    border-bottom: 2px solid #e8d5d0;
+    border-bottom: 2px solid var(--border);
     display: flex;
     align-items: center;
     gap: 10px;
@@ -109,7 +152,7 @@
     top: 0;
     bottom: 0;
     width: 2px;
-    background: #e8d5d0;
+    background: var(--border);
   }
 
   .event {
@@ -124,8 +167,8 @@
     width: 10px;
     height: 10px;
     border-radius: 50%;
-    background: #c0392b;
-    border: 2px solid #fdf6f0;
+    background: var(--dot);
+    border: 2px solid var(--bg);
     z-index: 1;
   }
 
@@ -156,8 +199,8 @@
   .time-badge {
     font-size: 0.72rem;
     font-weight: 700;
-    background: #f0ebe8;
-    color: #7a5a50;
+    background: var(--badge-bg);
+    color: var(--badge-text);
     padding: 2px 7px;
     border-radius: 20px;
     white-space: nowrap;
@@ -177,14 +220,14 @@
 
   /* Links */
   .card-body a, .link-list a {
-    color: #c0392b;
+    color: var(--primary);
     text-decoration: none;
-    border-bottom: 1px solid #e8b8b2;
+    border-bottom: 1px solid var(--link-line);
     transition: border-color 0.15s, color 0.15s;
   }
   .card-body a:hover, .link-list a:hover {
-    color: #96281b;
-    border-bottom-color: #96281b;
+    color: var(--primary-dk);
+    border-bottom-color: var(--primary-dk);
   }
 
   .link-list {
@@ -196,20 +239,20 @@
   .link-pill {
     display: inline-block;
     font-size: 0.78rem;
-    background: #fdf6f0;
-    border: 1px solid #e8d5d0;
+    background: var(--pill-bg);
+    border: 1px solid var(--pill-border);
     border-radius: 20px;
     padding: 3px 10px;
-    color: #c0392b !important;
+    color: var(--primary) !important;
     text-decoration: none !important;
-    border-bottom: 1px solid #e8d5d0 !important;
+    border-bottom: 1px solid var(--pill-border) !important;
     transition: background 0.15s, border-color 0.15s;
     white-space: nowrap;
   }
   .link-pill:hover {
-    background: #f5e6e0 !important;
-    border-color: #c0392b !important;
-    color: #96281b !important;
+    background: var(--pill-hover) !important;
+    border-color: var(--primary) !important;
+    color: var(--primary-dk) !important;
   }
   .link-pill.ticket {
     background: #eaf4fb;
@@ -264,7 +307,7 @@
   }
   .flight-city { font-weight: 700; font-size: 1rem; }
   .flight-time { font-size: 0.82rem; color: #888; }
-  .flight-arrow { color: #c0392b; font-size: 1.2rem; }
+  .flight-arrow { color: var(--primary); font-size: 1.2rem; }
   .flight-num {
     font-size: 0.75rem;
     background: #e8f4fd;
@@ -300,6 +343,17 @@
 <body>
 
 <header class="site-header">
+  <div class="theme-bar">
+    <div class="theme-bar-inner">
+      <span>色調</span>
+      <div class="theme-swatch active" data-theme="red"    style="background:#c0392b" title="深紅（原版）"></div>
+      <div class="theme-swatch"        data-theme="pink"   style="background:#c2185b" title="🌸 櫻花粉"></div>
+      <div class="theme-swatch"        data-theme="blue"   style="background:#1565c0" title="🌊 海洋藍"></div>
+      <div class="theme-swatch"        data-theme="green"  style="background:#2e7d32" title="🎋 抹茶綠"></div>
+      <div class="theme-swatch"        data-theme="navy"   style="background:#283593" title="🌃 夜空深藍"></div>
+      <div class="theme-swatch"        data-theme="orange" style="background:#e65100" title="🍂 楓葉橘"></div>
+    </div>
+  </div>
   <div class="header-top">
     <span class="torii">⛩️</span>
     <div>
@@ -1029,6 +1083,44 @@
 </main>
 
 <script>
+  const THEMES = {
+    red:    { bg:'#fdf6f0', primary:'#c0392b', dk:'#96281b', border:'#e8d5d0', badgeBg:'#f0ebe8', badgeText:'#7a5a50', linkLine:'#e8b8b2', pillBg:'#fdf6f0', pillBorder:'#e8d5d0', pillHover:'#f5e6e0' },
+    pink:   { bg:'#fff0f6', primary:'#c2185b', dk:'#880e4f', border:'#f8bbd0', badgeBg:'#fce4ec', badgeText:'#880e4f', linkLine:'#f48fb1', pillBg:'#fff0f6', pillBorder:'#f8bbd0', pillHover:'#fce4ec' },
+    blue:   { bg:'#f0f4ff', primary:'#1565c0', dk:'#0d47a1', border:'#bbdefb', badgeBg:'#e3f2fd', badgeText:'#0d47a1', linkLine:'#90caf9', pillBg:'#f0f4ff', pillBorder:'#bbdefb', pillHover:'#e3f2fd' },
+    green:  { bg:'#f1f8f1', primary:'#2e7d32', dk:'#1b5e20', border:'#c8e6c9', badgeBg:'#e8f5e9', badgeText:'#1b5e20', linkLine:'#a5d6a7', pillBg:'#f1f8f1', pillBorder:'#c8e6c9', pillHover:'#e8f5e9' },
+    navy:   { bg:'#f0f2ff', primary:'#283593', dk:'#1a237e', border:'#c5cae9', badgeBg:'#e8eaf6', badgeText:'#1a237e', linkLine:'#9fa8da', pillBg:'#f0f2ff', pillBorder:'#c5cae9', pillHover:'#e8eaf6' },
+    orange: { bg:'#fff8f0', primary:'#e65100', dk:'#bf360c', border:'#ffccbc', badgeBg:'#fbe9e7', badgeText:'#bf360c', linkLine:'#ffab91', pillBg:'#fff8f0', pillBorder:'#ffccbc', pillHover:'#fbe9e7' },
+  };
+
+  function applyTheme(name) {
+    const t = THEMES[name];
+    if (!t) return;
+    const r = document.documentElement.style;
+    r.setProperty('--bg',          t.bg);
+    r.setProperty('--primary',     t.primary);
+    r.setProperty('--primary-dk',  t.dk);
+    r.setProperty('--border',      t.border);
+    r.setProperty('--badge-bg',    t.badgeBg);
+    r.setProperty('--badge-text',  t.badgeText);
+    r.setProperty('--link-line',   t.linkLine);
+    r.setProperty('--pill-bg',     t.pillBg);
+    r.setProperty('--pill-border', t.pillBorder);
+    r.setProperty('--pill-hover',  t.pillHover);
+    r.setProperty('--dot',         t.primary);
+    document.querySelectorAll('.theme-swatch').forEach(s => {
+      s.classList.toggle('active', s.dataset.theme === name);
+    });
+    localStorage.setItem('theme', name);
+  }
+
+  document.querySelectorAll('.theme-swatch').forEach(s => {
+    s.addEventListener('click', () => applyTheme(s.dataset.theme));
+  });
+
+  // Restore saved theme
+  const saved = localStorage.getItem('theme');
+  if (saved && THEMES[saved]) applyTheme(saved);
+
   function showDay(index) {
     document.querySelectorAll('.day-panel').forEach((p, i) => {
       p.classList.toggle('active', i === index);
