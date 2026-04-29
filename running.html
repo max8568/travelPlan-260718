@@ -124,7 +124,7 @@
     margin-bottom: 6px;
     gap: 4px;
   }
-  .col-label { font-size: 0.68rem; color: var(--muted); letter-spacing: 0.04em; text-transform: uppercase; }
+  .col-label { font-size: 0.68rem; color: var(--muted); letter-spacing: 0.04em; }
   .col-label:nth-child(3) { text-align: center; }
   .col-label:last-child   { text-align: right; }
 
@@ -474,9 +474,9 @@ function addRecord() {
   records.push({ id: Date.now(), date: dateEl.value, distance: dist, ms });
   saveRecords(records);
 
-  distEl.value = ''; mmEl.value = ''; ssEl.value = ''; ccEl.value = '';
-  document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+  mmEl.value = ''; ssEl.value = ''; ccEl.value = '';
   dateEl.value = todayISO();
+  setPreset(400);
   renderRecords();
 }
 
@@ -601,6 +601,7 @@ function swFill() {
 
 // ===== Init =====
 document.getElementById('input-date').value = todayISO();
+setPreset(400);
 renderRecords();
 </script>
 </body>
