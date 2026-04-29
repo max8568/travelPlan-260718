@@ -25,7 +25,7 @@
     background: var(--bg);
     color: var(--text);
     min-height: 100vh;
-    padding-bottom: 240px;
+    padding-bottom: 280px;
   }
 
   /* ===== HEADER ===== */
@@ -175,25 +175,26 @@
   .sw-fill-btn { margin-left: auto; background: var(--badge-bg); }
   .sw-fill-btn:not(:disabled):active { background: var(--border); }
 
-  /* --- Input row --- */
-  .input-row {
+  /* --- Row 1: date + distance --- */
+  .field-row {
     display: flex;
-    align-items: flex-start;
     gap: 8px;
+    margin-bottom: 8px;
   }
 
   .input-field {
-    height: 44px;
+    height: 46px;
     border: 1.5px solid var(--border);
-    border-radius: 8px;
+    border-radius: 10px;
     padding: 0 10px;
-    font-size: 0.92rem;
+    font-size: 0.95rem;
     font-family: inherit;
     color: var(--text);
     background: white;
     outline: none;
     transition: border-color 0.15s;
     -webkit-appearance: none;
+    width: 100%;
   }
   .input-field:focus { border-color: var(--primary); }
   .input-field.invalid { border-color: var(--danger); animation: shake 0.3s ease; }
@@ -204,32 +205,31 @@
     75%      { transform: translateX(5px); }
   }
 
-  .input-date { width: 140px; flex-shrink: 0; }
-
-  /* Distance */
-  .distance-group { display: flex; flex-direction: column; gap: 5px; flex: 1; min-width: 0; }
-  .input-distance { width: 100%; text-align: center; }
+  .input-date { flex: 1.6; min-width: 0; }
+  .input-distance { flex: 1; min-width: 0; text-align: center; }
   .input-distance::-webkit-inner-spin-button,
   .input-distance::-webkit-outer-spin-button { -webkit-appearance: none; }
   .input-distance { -moz-appearance: textfield; }
 
+  /* --- Row 2: presets --- */
   .preset-row {
     display: flex;
-    gap: 4px;
+    gap: 8px;
     overflow-x: auto;
     scrollbar-width: none;
     -webkit-overflow-scrolling: touch;
+    margin-bottom: 8px;
   }
   .preset-row::-webkit-scrollbar { display: none; }
   .preset-btn {
-    flex-shrink: 0;
-    height: 28px;
-    padding: 0 10px;
-    border: 1px solid var(--border);
-    border-radius: 20px;
+    flex: 1;
+    min-width: 52px;
+    height: 36px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
     background: var(--badge-bg);
     color: var(--badge-text);
-    font-size: 0.78rem;
+    font-size: 0.85rem;
     font-weight: 600;
     cursor: pointer;
     transition: background 0.12s, border-color 0.12s;
@@ -240,20 +240,26 @@
     color: white;
   }
 
-  /* Time group: MM : SS . cc */
+  /* --- Row 3: time + add button --- */
+  .time-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
   .time-group {
     display: flex;
     align-items: center;
-    gap: 2px;
-    flex-shrink: 0;
+    gap: 3px;
+    flex: 1;
   }
   .time-part {
-    width: 40px;
-    height: 44px;
+    flex: 1;
+    min-width: 0;
+    height: 46px;
     border: 1.5px solid var(--border);
-    border-radius: 8px;
+    border-radius: 10px;
     text-align: center;
-    font-size: 1rem;
+    font-size: 1.1rem;
     font-variant-numeric: tabular-nums;
     font-family: inherit;
     color: var(--text);
@@ -268,22 +274,21 @@
   .time-part::-webkit-outer-spin-button { -webkit-appearance: none; }
   .time-part:focus { border-color: var(--primary); }
   .time-part.invalid { border-color: var(--danger); animation: shake 0.3s ease; }
-  .time-sep { font-weight: 700; color: var(--muted); font-size: 1rem; line-height: 44px; padding: 0 1px; }
+  .time-sep { font-weight: 700; color: var(--muted); font-size: 1.1rem; line-height: 46px; padding: 0 1px; flex-shrink: 0; }
 
   /* Add button */
   .add-btn {
-    width: 44px;
-    height: 44px;
+    width: 54px;
+    height: 46px;
     border-radius: 10px;
     border: none;
     background: var(--primary);
     color: white;
-    font-size: 1.6rem;
+    font-size: 1.8rem;
     font-weight: 300;
     line-height: 1;
     cursor: pointer;
     flex-shrink: 0;
-    align-self: flex-start;
     transition: background 0.15s;
   }
   .add-btn:active { background: var(--primary-dk); }
@@ -336,22 +341,24 @@
     <button class="sw-btn sw-fill-btn" id="sw-fill" onclick="swFill()" disabled>填入</button>
   </div>
 
-  <div class="input-row">
+  <!-- Row 1: date + distance -->
+  <div class="field-row">
     <input type="date" id="input-date" class="input-field input-date">
+    <input type="number" id="input-dist" class="input-field input-distance"
+           placeholder="距離 m" step="1" min="0" inputmode="numeric">
+  </div>
 
-    <div class="distance-group">
-      <input type="number" id="input-dist" class="input-field input-distance"
-             placeholder="m" step="1" min="0" inputmode="numeric">
-      <div class="preset-row">
-        <button class="preset-btn" onclick="setPreset(100)">100</button>
-        <button class="preset-btn" onclick="setPreset(200)">200</button>
-        <button class="preset-btn" onclick="setPreset(400)">400</button>
-        <button class="preset-btn" onclick="setPreset(500)">500</button>
-        <button class="preset-btn" onclick="setPreset(1000)">1000</button>
-      </div>
-    </div>
+  <!-- Row 2: presets -->
+  <div class="preset-row">
+    <button class="preset-btn" onclick="setPreset(100)">100</button>
+    <button class="preset-btn" onclick="setPreset(200)">200</button>
+    <button class="preset-btn" onclick="setPreset(400)">400</button>
+    <button class="preset-btn" onclick="setPreset(500)">500</button>
+    <button class="preset-btn" onclick="setPreset(1000)">1000</button>
+  </div>
 
-    <!-- MM : SS . cc -->
+  <!-- Row 3: MM:SS.cc + add -->
+  <div class="time-row">
     <div class="time-group">
       <input type="number" id="input-mm" class="time-part" placeholder="MM" min="0" inputmode="numeric">
       <span class="time-sep">:</span>
@@ -359,7 +366,6 @@
       <span class="time-sep">.</span>
       <input type="number" id="input-cc" class="time-part" placeholder="cc" min="0" max="99" inputmode="numeric">
     </div>
-
     <button class="add-btn" onclick="addRecord()">+</button>
   </div>
 </footer>
