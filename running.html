@@ -172,8 +172,6 @@
   .sw-btn:active { background: var(--badge-bg); }
   .sw-btn.running { background: var(--primary); color: white; }
   .sw-btn:disabled { opacity: 0.35; cursor: default; }
-  .sw-fill-btn { margin-left: auto; background: var(--badge-bg); }
-  .sw-fill-btn:not(:disabled):active { background: var(--border); }
 
   /* --- Row 1: date + distance --- */
   .field-row {
@@ -337,8 +335,7 @@
   <div class="stopwatch-row">
     <span class="sw-display" id="sw-display">00:00.00</span>
     <button class="sw-btn" id="sw-startstop" onclick="swStartStop()">開始</button>
-    <button class="sw-btn" id="sw-reset" onclick="swReset()" disabled>重設</button>
-    <button class="sw-btn sw-fill-btn" id="sw-fill" onclick="swFill()" disabled>填入</button>
+    <button class="sw-btn" id="sw-reset" onclick="swReset()" disabled>重置</button>
   </div>
 
   <!-- Row 1: date + distance -->
@@ -559,7 +556,6 @@ function swUpdateDisplay() {
 function swStartStop() {
   const btn      = document.getElementById('sw-startstop');
   const resetBtn = document.getElementById('sw-reset');
-  const fillBtn  = document.getElementById('sw-fill');
 
   if (!swRunning) {
     swStart   = Date.now();
@@ -568,7 +564,6 @@ function swStartStop() {
     btn.textContent = '暫停';
     btn.classList.add('running');
     resetBtn.disabled = false;
-    fillBtn.disabled  = true;
   } else {
     swAccMs  += Date.now() - swStart;
     swRunning = false;
@@ -576,7 +571,7 @@ function swStartStop() {
     swUpdateDisplay();
     btn.textContent = '繼續';
     btn.classList.remove('running');
-    fillBtn.disabled = swAccMs === 0;
+    swFill();
   }
 }
 
@@ -587,7 +582,6 @@ function swReset() {
   document.getElementById('sw-startstop').textContent = '開始';
   document.getElementById('sw-startstop').classList.remove('running');
   document.getElementById('sw-reset').disabled = true;
-  document.getElementById('sw-fill').disabled  = true;
 }
 
 function swFill() {
