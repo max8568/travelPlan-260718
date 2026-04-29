@@ -437,7 +437,7 @@ function renderRecords() {
     row.className = 'record-row';
     row.dataset.id = r.id;
     row.innerHTML = `
-      <div class="delete-bg">🗑</div>
+      <div class="delete-bg">✕</div>
       <div class="record-inner">
         <span class="record-date">${fmtDate(r.date)}</span>
         <span class="record-dist">${r.distance}</span>
