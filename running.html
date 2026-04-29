@@ -323,8 +323,8 @@
   </div>
 
   <div class="col-labels">
-    <span class="col-label">日期</span>
-    <span class="col-label">距離</span>
+    <span class="col-label">日期時間</span>
+    <span class="col-label">距離(m)</span>
     <span class="col-label">時間(MM:SS.cc)</span>
     <span class="col-label">配速</span>
   </div>
@@ -440,7 +440,7 @@ function renderRecords() {
       <div class="delete-bg">🗑</div>
       <div class="record-inner">
         <span class="record-date">${fmtDate(r.date)}</span>
-        <span class="record-dist">${r.distance}m</span>
+        <span class="record-dist">${r.distance}</span>
         <span class="record-time">${formatTimeMs(r.ms)}</span>
         <span class="record-pace">${calcPace(r.ms, r.distance)}/km</span>
       </div>
