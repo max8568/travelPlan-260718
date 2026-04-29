@@ -84,7 +84,7 @@
   }
   .record-inner {
     display: grid;
-    grid-template-columns: 72px 60px 1fr 1fr;
+    grid-template-columns: 96px 60px 1fr 1fr;
     align-items: center;
     gap: 4px;
     padding: 13px 16px;
@@ -110,7 +110,7 @@
   }
   @media (hover: hover) {
     .record-row:hover .delete-btn-desktop { display: block; }
-    .record-row:hover .record-inner { grid-template-columns: 72px 60px 1fr calc(1fr - 28px); }
+    .record-row:hover .record-inner { grid-template-columns: 96px 60px 1fr calc(1fr - 28px); }
   }
 
   /* ===== EMPTY STATE ===== */
@@ -119,7 +119,7 @@
   /* ===== COLUMN LABELS ===== */
   .col-labels {
     display: grid;
-    grid-template-columns: 72px 60px 1fr 1fr;
+    grid-template-columns: 96px 60px 1fr 1fr;
     padding: 0 16px;
     margin-bottom: 6px;
     gap: 4px;
@@ -343,7 +343,7 @@
 
   <!-- Row 1: date + distance -->
   <div class="field-row">
-    <input type="date" id="input-date" class="input-field input-date">
+    <input type="datetime-local" id="input-date" class="input-field input-date">
     <input type="number" id="input-dist" class="input-field input-distance"
            placeholder="距離 m" step="1" min="0" inputmode="numeric">
   </div>
@@ -385,7 +385,8 @@ function saveRecords(arr) {
 // ===== Utils =====
 function todayISO() {
   const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  const p = n => String(n).padStart(2,'0');
+  return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`;
 }
 
 // ms → "MM:SS.cc"
@@ -412,9 +413,11 @@ function calcPace(ms, m) {
   return `${pm}'${String(ps).padStart(2,'0')}"`;
 }
 
-function fmtDate(iso) {
-  const [, m, d] = iso.split('-');
-  return `${m}/${d}`;
+function fmtDate(val) {
+  if (!val) return '';
+  const [datePart, timePart] = val.split('T');
+  const [, m, d] = datePart.split('-');
+  return timePart ? `${m}/${d} ${timePart}` : `${m}/${d}`;
 }
 
 // ===== Render =====
