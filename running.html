@@ -349,6 +349,7 @@
     border-radius: 8px; background: white;
     color: var(--muted); font-size: 0.88rem;
     cursor: pointer; font-family: inherit;
+    touch-action: manipulation;
   }
   .modal-confirm {
     height: 40px; padding: 0 18px;
@@ -356,6 +357,7 @@
     background: var(--primary); color: white;
     font-size: 0.88rem; font-weight: 600;
     cursor: pointer; font-family: inherit;
+    touch-action: manipulation;
   }
   .version-tag {
     text-align: center;
@@ -761,19 +763,10 @@ async function sendRecordToSheets(record) {
   }
 }
 
-// ===== Modal button touch handling =====
-function bindModalBtn(id, fn) {
-  const btn = document.getElementById(id);
-  btn.addEventListener('touchend', e => { e.preventDefault(); fn(); });
-  btn.addEventListener('click', fn);
-}
-
 // ===== Init =====
 document.getElementById('input-date').value = todayISO();
 setPreset(400);
 renderRecords();
-bindModalBtn('confirm-cancel-btn', closeConfirmModal);
-bindModalBtn('confirm-delete-btn', executeDelete);
 </script>
 <!-- Confirm Delete Modal -->
 <div class="modal-overlay" id="confirm-modal">
@@ -781,8 +774,8 @@ bindModalBtn('confirm-delete-btn', executeDelete);
     <h2>確認刪除</h2>
     <p>確定要刪除這筆記錄嗎？<br>此操作無法復原。</p>
     <div class="modal-actions">
-      <button class="modal-cancel" id="confirm-cancel-btn">取消</button>
-      <button class="modal-confirm" style="background:var(--danger)" id="confirm-delete-btn">刪除</button>
+      <button class="modal-cancel" onclick="closeConfirmModal()">取消</button>
+      <button class="modal-confirm" style="background:var(--danger)" onclick="executeDelete()">刪除</button>
     </div>
   </div>
 </div>
