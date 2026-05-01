@@ -553,6 +553,22 @@ function addRecord() {
 function deleteRecord(id) {
   saveRecords(loadRecords().filter(r => r.id !== id));
   renderRecords();
+  deleteRecordFromSheets(id);
+}
+
+async function deleteRecordFromSheets(id) {
+  const url = localStorage.getItem(SCRIPT_URL_KEY);
+  if (!url) return;
+  try {
+    await fetch(url, {
+      method: 'POST',
+      body: JSON.stringify({ action: 'delete', id }),
+      headers: { 'Content-Type': 'text/plain' },
+      redirect: 'follow'
+    });
+  } catch(err) {
+    console.error('Sheets 刪除失敗:', err);
+  }
 }
 
 function flash(el) {
@@ -698,7 +714,7 @@ async function sendRecordToSheets(record) {
   try {
     const res = await fetch(url, {
       method: 'POST',
-      body: JSON.stringify({ record }),
+      body: JSON.stringify({ action: 'add', record }),
       headers: { 'Content-Type': 'text/plain' },
       redirect: 'follow'
     });
