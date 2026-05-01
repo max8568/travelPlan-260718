@@ -365,11 +365,11 @@
     touch-action: manipulation;
   }
   .version-tag {
-    text-align: center;
-    font-size: 0.7rem;
+    text-align: right;
+    font-size: 0.65rem;
     color: var(--muted);
-    padding: 6px 0 4px;
-    opacity: 0.5;
+    padding: 2px 4px 4px;
+    opacity: 0.4;
   }
 </style>
 </head>
@@ -418,6 +418,7 @@
     <button class="sw-btn" id="sw-reset" onclick="swReset()" disabled>重置</button>
     <span class="sw-display" id="sw-display">00:00.00</span>
   </div>
+  <div class="version-tag">v2026.05.01-5</div>
 
   <!-- Row 1: date + distance -->
   <div class="field-row">
@@ -833,6 +834,5 @@ renderRecords();
     </div>
   </div>
 </div>
-<div class="version-tag">v2026.05.01-5</div>
 </body>
 </html>
