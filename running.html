@@ -74,13 +74,18 @@
   .delete-bg {
     position: absolute;
     right: 0; top: 0; bottom: 0;
-    width: 80px;
+    width: 72px;
     background: var(--danger);
     display: flex;
     align-items: center;
     justify-content: center;
-    color: white;
-    font-size: 1.4rem;
+  }
+  .delete-bg-btn {
+    background: none; border: none;
+    color: white; font-size: 1.3rem;
+    width: 100%; height: 100%;
+    cursor: pointer;
+    touch-action: manipulation;
   }
   .record-inner {
     display: grid;
@@ -514,14 +519,14 @@ function renderRecords() {
     row.className = 'record-row';
     row.dataset.id = r.id;
     row.innerHTML = `
-      <div class="delete-bg">✕</div>
+      <div class="delete-bg"><button class="delete-bg-btn" onclick="confirmDelete(${r.id})" ontouchend="event.preventDefault();confirmDelete(${r.id})">✕</button></div>
       <div class="record-inner">
         <span class="record-date">${fmtDate(r.date)}</span>
         <span class="record-dist">${r.distance}</span>
         <span class="record-time">${formatTimeMs(r.ms)}</span>
         <span class="record-pace">${calcPace(r.ms, r.distance)}/km</span>
       </div>
-      <button class="delete-btn-desktop" onclick="deleteRecord(${r.id})" title="刪除">×</button>
+      <button class="delete-btn-desktop" onclick="confirmDelete(${r.id})" title="刪除">×</button>
     `;
     attachSwipeHandlers(row, r.id);
     list.appendChild(row);
@@ -604,34 +609,69 @@ function flash(el) {
   setTimeout(() => el.classList.remove('invalid'), 600);
 }
 
-// ===== Swipe to delete =====
+// ===== Swipe to reveal delete button =====
+let _revealedRow = null;
+
+function closeRevealedRow() {
+  if (_revealedRow) {
+    const inner = _revealedRow.querySelector('.record-inner');
+    inner.style.transition = '';
+    inner.style.transform = '';
+    _revealedRow = null;
+  }
+}
+
 function attachSwipeHandlers(row, id) {
   const inner = row.querySelector('.record-inner');
-  let startX = 0, startY = 0, curX = 0, swiping = false;
-  const THRESHOLD = 80;
+  const REVEAL = -72;
+  const THRESHOLD = 40;
+  let startX = 0, startY = 0, dx = 0, swiping = false, revealed = false;
 
   row.addEventListener('touchstart', e => {
     startX = e.touches[0].clientX;
     startY = e.touches[0].clientY;
-    curX = 0; swiping = false;
+    dx = 0; swiping = false;
     inner.style.transition = 'none';
   }, { passive: true });
 
   row.addEventListener('touchmove', e => {
-    const dx = e.touches[0].clientX - startX;
-    const dy = e.touches[0].clientY - startY;
-    if (!swiping && Math.abs(dy) > Math.abs(dx)) return;
+    const ddx = e.touches[0].clientX - startX;
+    const ddy = e.touches[0].clientY - startY;
+    if (!swiping && Math.abs(ddy) > Math.abs(ddx)) return;
     swiping = true;
-    curX = Math.min(0, dx);
-    inner.style.transform = `translateX(${curX}px)`;
+    dx = ddx;
+    const base = revealed ? REVEAL : 0;
+    const x = Math.min(0, Math.max(REVEAL, base + dx));
+    inner.style.transform = `translateX(${x}px)`;
   }, { passive: true });
 
   row.addEventListener('touchend', () => {
     inner.style.transition = '';
-    if (curX < -THRESHOLD) deleteRecord(id);
-    else inner.style.transform = '';
+    if (!swiping) {
+      // pure tap: close if revealed
+      if (revealed) { closeRevealedRow(); revealed = false; }
+      return;
+    }
+    const base = revealed ? REVEAL : 0;
+    const finalX = Math.min(0, Math.max(REVEAL, base + dx));
+    if (finalX < -THRESHOLD) {
+      // close any other open row first
+      if (_revealedRow && _revealedRow !== row) closeRevealedRow();
+      inner.style.transform = `translateX(${REVEAL}px)`;
+      revealed = true;
+      _revealedRow = row;
+    } else {
+      inner.style.transform = '';
+      revealed = false;
+      if (_revealedRow === row) _revealedRow = null;
+    }
   });
 }
+
+// tap outside to close revealed row
+document.addEventListener('touchstart', e => {
+  if (_revealedRow && !_revealedRow.contains(e.target)) closeRevealedRow();
+}, { passive: true });
 
 // ===== Preset buttons =====
 function setPreset(m) {
@@ -793,6 +833,6 @@ renderRecords();
     </div>
   </div>
 </div>
-<div class="version-tag">v2026.05.01-4</div>
+<div class="version-tag">v2026.05.01-5</div>
 </body>
 </html>
