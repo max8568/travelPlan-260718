@@ -308,6 +308,55 @@
   }
   .sync-btn:active { background: rgba(255,255,255,0.3); }
   .sync-btn.syncing { opacity: 0.6; cursor: default; }
+
+  /* ===== URL MODAL ===== */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+  .modal-overlay.show { display: flex; }
+  .modal-box {
+    background: white;
+    border-radius: 14px;
+    padding: 24px 20px 20px;
+    width: 100%;
+    max-width: 480px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+  }
+  .modal-box h2 { font-size: 1rem; font-weight: 700; margin-bottom: 6px; color: var(--text); }
+  .modal-box p  { font-size: 0.8rem; color: var(--muted); margin-bottom: 14px; line-height: 1.5; }
+  .modal-url-input {
+    width: 100%; height: 44px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    padding: 0 12px;
+    font-size: 0.85rem;
+    font-family: inherit;
+    outline: none;
+    margin-bottom: 12px;
+  }
+  .modal-url-input:focus { border-color: var(--primary); }
+  .modal-actions { display: flex; gap: 8px; justify-content: flex-end; }
+  .modal-cancel {
+    height: 40px; padding: 0 18px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px; background: white;
+    color: var(--muted); font-size: 0.88rem;
+    cursor: pointer; font-family: inherit;
+  }
+  .modal-confirm {
+    height: 40px; padding: 0 18px;
+    border: none; border-radius: 8px;
+    background: var(--primary); color: white;
+    font-size: 0.88rem; font-weight: 600;
+    cursor: pointer; font-family: inherit;
+  }
 </style>
 </head>
 <body>
@@ -618,17 +667,36 @@ function swFill() {
 // ===== Sync to Google Sheets =====
 const SCRIPT_URL_KEY = 'gs-script-url';
 
-async function syncToSheets() {
-  const btn = document.getElementById('sync-btn');
-
-  let url = localStorage.getItem(SCRIPT_URL_KEY);
+function syncToSheets() {
+  const url = localStorage.getItem(SCRIPT_URL_KEY);
   if (!url) {
-    url = prompt('請貼上 Google Apps Script 網址：');
-    if (!url) return;
-    localStorage.setItem(SCRIPT_URL_KEY, url.trim());
-    url = url.trim();
+    openUrlModal();
+  } else {
+    doSync(url);
   }
+}
 
+function openUrlModal() {
+  const saved = localStorage.getItem(SCRIPT_URL_KEY) || '';
+  document.getElementById('modal-url-input').value = saved;
+  document.getElementById('url-modal').classList.add('show');
+  setTimeout(() => document.getElementById('modal-url-input').focus(), 100);
+}
+
+function closeUrlModal() {
+  document.getElementById('url-modal').classList.remove('show');
+}
+
+function confirmUrl() {
+  const url = document.getElementById('modal-url-input').value.trim();
+  if (!url) return;
+  localStorage.setItem(SCRIPT_URL_KEY, url);
+  closeUrlModal();
+  doSync(url);
+}
+
+async function doSync(url) {
+  const btn = document.getElementById('sync-btn');
   btn.textContent = '同步中…';
   btn.classList.add('syncing');
   btn.disabled = true;
@@ -649,34 +717,31 @@ async function syncToSheets() {
       throw new Error(json.status);
     }
   } catch (err) {
-    alert('同步失敗：' + err.message + '\n\n如需重設網址，長按「同步」按鈕。');
     btn.textContent = '☁ 同步';
+    openUrlModal(); // 讓使用者重新確認網址
   } finally {
     btn.classList.remove('syncing');
     btn.disabled = false;
   }
 }
 
-// 長按同步按鈕可重設 Apps Script 網址
-(function() {
-  let t;
-  const btn = document.getElementById('sync-btn');
-  btn.addEventListener('touchstart', () => { t = setTimeout(() => {
-    localStorage.removeItem(SCRIPT_URL_KEY);
-    alert('已清除 Apps Script 網址，下次同步時重新輸入。');
-  }, 1200); }, { passive: true });
-  btn.addEventListener('touchend', () => clearTimeout(t));
-  btn.addEventListener('mousedown', () => { t = setTimeout(() => {
-    localStorage.removeItem(SCRIPT_URL_KEY);
-    alert('已清除 Apps Script 網址，下次同步時重新輸入。');
-  }, 1200); });
-  btn.addEventListener('mouseup', () => clearTimeout(t));
-})();
-
 // ===== Init =====
 document.getElementById('input-date').value = todayISO();
 setPreset(400);
 renderRecords();
 </script>
+<!-- URL Modal -->
+<div class="modal-overlay" id="url-modal">
+  <div class="modal-box">
+    <h2>設定 Apps Script 網址</h2>
+    <p>請貼上 Google Apps Script 部署後的網址<br>（開頭為 https://script.google.com/macros/s/…）</p>
+    <input class="modal-url-input" id="modal-url-input" type="url"
+           placeholder="https://script.google.com/macros/s/…">
+    <div class="modal-actions">
+      <button class="modal-cancel" onclick="closeUrlModal()">取消</button>
+      <button class="modal-confirm" onclick="confirmUrl()">確認並同步</button>
+    </div>
+  </div>
+</div>
 </body>
 </html>
