@@ -290,6 +290,24 @@
     transition: background 0.15s;
   }
   .add-btn:active { background: var(--primary-dk); }
+
+  /* ===== SYNC BUTTON ===== */
+  .sync-btn {
+    margin-left: auto;
+    background: rgba(255,255,255,0.18);
+    border: 1.5px solid rgba(255,255,255,0.5);
+    color: white;
+    border-radius: 8px;
+    padding: 0 14px;
+    height: 36px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s;
+  }
+  .sync-btn:active { background: rgba(255,255,255,0.3); }
+  .sync-btn.syncing { opacity: 0.6; cursor: default; }
 </style>
 </head>
 <body>
@@ -300,6 +318,7 @@
     <div>
       <h1>Running</h1>
     </div>
+    <button class="sync-btn" id="sync-btn" onclick="syncToSheets()">☁ 同步</button>
   </div>
 </header>
 
@@ -595,6 +614,64 @@ function swFill() {
   document.getElementById('input-ss').value = String(ss).padStart(2,'0');
   document.getElementById('input-cc').value = String(cc).padStart(2,'0');
 }
+
+// ===== Sync to Google Sheets =====
+const SCRIPT_URL_KEY = 'gs-script-url';
+
+async function syncToSheets() {
+  const btn = document.getElementById('sync-btn');
+
+  let url = localStorage.getItem(SCRIPT_URL_KEY);
+  if (!url) {
+    url = prompt('請貼上 Google Apps Script 網址：');
+    if (!url) return;
+    localStorage.setItem(SCRIPT_URL_KEY, url.trim());
+    url = url.trim();
+  }
+
+  btn.textContent = '同步中…';
+  btn.classList.add('syncing');
+  btn.disabled = true;
+
+  try {
+    const records = loadRecords();
+    const res = await fetch(url, {
+      method: 'POST',
+      body: JSON.stringify({ records }),
+      headers: { 'Content-Type': 'text/plain' },
+      redirect: 'follow'
+    });
+    const json = await res.json();
+    if (json.status === 'ok') {
+      btn.textContent = '✓ 已同步';
+      setTimeout(() => { btn.textContent = '☁ 同步'; }, 2500);
+    } else {
+      throw new Error(json.status);
+    }
+  } catch (err) {
+    alert('同步失敗：' + err.message + '\n\n如需重設網址，長按「同步」按鈕。');
+    btn.textContent = '☁ 同步';
+  } finally {
+    btn.classList.remove('syncing');
+    btn.disabled = false;
+  }
+}
+
+// 長按同步按鈕可重設 Apps Script 網址
+(function() {
+  let t;
+  const btn = document.getElementById('sync-btn');
+  btn.addEventListener('touchstart', () => { t = setTimeout(() => {
+    localStorage.removeItem(SCRIPT_URL_KEY);
+    alert('已清除 Apps Script 網址，下次同步時重新輸入。');
+  }, 1200); }, { passive: true });
+  btn.addEventListener('touchend', () => clearTimeout(t));
+  btn.addEventListener('mousedown', () => { t = setTimeout(() => {
+    localStorage.removeItem(SCRIPT_URL_KEY);
+    alert('已清除 Apps Script 網址，下次同步時重新輸入。');
+  }, 1200); });
+  btn.addEventListener('mouseup', () => clearTimeout(t));
+})();
 
 // ===== Init =====
 document.getElementById('input-date').value = todayISO();
