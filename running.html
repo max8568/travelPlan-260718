@@ -690,14 +690,35 @@ function confirmUrl() {
 async function sendRecordToSheets(record) {
   const url = localStorage.getItem(SCRIPT_URL_KEY);
   if (!url) return;
+
+  const btn = document.querySelector('.add-btn');
+  btn.textContent = '…';
+  btn.disabled = true;
+
   try {
-    await fetch(url, {
+    const res = await fetch(url, {
       method: 'POST',
       body: JSON.stringify({ record }),
       headers: { 'Content-Type': 'text/plain' },
       redirect: 'follow'
     });
-  } catch(_) {}
+    const json = await res.json();
+    if (json.status === 'ok') {
+      btn.textContent = '✓';
+      setTimeout(() => { btn.textContent = '+'; btn.disabled = false; }, 1500);
+    } else {
+      throw new Error(json.status);
+    }
+  } catch(err) {
+    console.error('Sheets 寫入失敗:', err);
+    btn.textContent = '!';
+    btn.style.background = 'var(--danger)';
+    setTimeout(() => {
+      btn.textContent = '+';
+      btn.style.background = '';
+      btn.disabled = false;
+    }, 2500);
+  }
 }
 
 // ===== Init =====
