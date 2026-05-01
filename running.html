@@ -550,10 +550,27 @@ function addRecord() {
   renderRecords();
 }
 
-function deleteRecord(id) {
+function confirmDelete(id) {
+  const modal = document.getElementById('confirm-modal');
+  modal.dataset.pendingId = id;
+  modal.classList.add('show');
+}
+
+function closeConfirmModal() {
+  document.getElementById('confirm-modal').classList.remove('show');
+}
+
+function executeDelete() {
+  const modal = document.getElementById('confirm-modal');
+  const id = Number(modal.dataset.pendingId);
+  modal.classList.remove('show');
   saveRecords(loadRecords().filter(r => r.id !== id));
   renderRecords();
   deleteRecordFromSheets(id);
+}
+
+function deleteRecord(id) {
+  confirmDelete(id);
 }
 
 async function deleteRecordFromSheets(id) {
@@ -742,6 +759,18 @@ document.getElementById('input-date').value = todayISO();
 setPreset(400);
 renderRecords();
 </script>
+<!-- Confirm Delete Modal -->
+<div class="modal-overlay" id="confirm-modal">
+  <div class="modal-box">
+    <h2>確認刪除</h2>
+    <p>確定要刪除這筆記錄嗎？<br>此操作無法復原。</p>
+    <div class="modal-actions">
+      <button class="modal-cancel" onclick="closeConfirmModal()">取消</button>
+      <button class="modal-confirm" style="background:var(--danger)" onclick="executeDelete()">刪除</button>
+    </div>
+  </div>
+</div>
+
 <!-- URL Modal -->
 <div class="modal-overlay" id="url-modal">
   <div class="modal-box">
