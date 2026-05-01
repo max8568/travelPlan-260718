@@ -367,7 +367,7 @@
     <div>
       <h1>Running</h1>
     </div>
-    <button class="sync-btn" id="sync-btn" onclick="syncToSheets()">☁ 同步</button>
+    <button class="sync-btn" id="sync-btn" onclick="openSettings()">⚙</button>
   </div>
 </header>
 
@@ -539,8 +539,10 @@ function addRecord() {
   if (!valid) return;
 
   const records = loadRecords();
-  records.push({ id: Date.now(), date: dateEl.value, distance: dist, ms });
+  const newRecord = { id: Date.now(), date: dateEl.value, distance: dist, ms };
+  records.push(newRecord);
   saveRecords(records);
+  sendRecordToSheets(newRecord);
 
   mmEl.value = ''; ssEl.value = ''; ccEl.value = '';
   dateEl.value = todayISO();
@@ -664,21 +666,11 @@ function swFill() {
   document.getElementById('input-cc').value = String(cc).padStart(2,'0');
 }
 
-// ===== Sync to Google Sheets =====
+// ===== Google Sheets Integration =====
 const SCRIPT_URL_KEY = 'gs-script-url';
 
-function syncToSheets() {
-  const url = localStorage.getItem(SCRIPT_URL_KEY);
-  if (!url) {
-    openUrlModal();
-  } else {
-    doSync(url);
-  }
-}
-
-function openUrlModal() {
-  const saved = localStorage.getItem(SCRIPT_URL_KEY) || '';
-  document.getElementById('modal-url-input').value = saved;
+function openSettings() {
+  document.getElementById('modal-url-input').value = localStorage.getItem(SCRIPT_URL_KEY) || '';
   document.getElementById('url-modal').classList.add('show');
   setTimeout(() => document.getElementById('modal-url-input').focus(), 100);
 }
@@ -692,37 +684,20 @@ function confirmUrl() {
   if (!url) return;
   localStorage.setItem(SCRIPT_URL_KEY, url);
   closeUrlModal();
-  doSync(url);
 }
 
-async function doSync(url) {
-  const btn = document.getElementById('sync-btn');
-  btn.textContent = '同步中…';
-  btn.classList.add('syncing');
-  btn.disabled = true;
-
+// 新增記錄後靜默寫入 Sheets（不影響主流程）
+async function sendRecordToSheets(record) {
+  const url = localStorage.getItem(SCRIPT_URL_KEY);
+  if (!url) return;
   try {
-    const records = loadRecords();
-    const res = await fetch(url, {
+    await fetch(url, {
       method: 'POST',
-      body: JSON.stringify({ records }),
+      body: JSON.stringify({ record }),
       headers: { 'Content-Type': 'text/plain' },
       redirect: 'follow'
     });
-    const json = await res.json();
-    if (json.status === 'ok') {
-      btn.textContent = '✓ 已同步';
-      setTimeout(() => { btn.textContent = '☁ 同步'; }, 2500);
-    } else {
-      throw new Error(json.status);
-    }
-  } catch (err) {
-    btn.textContent = '☁ 同步';
-    openUrlModal(); // 讓使用者重新確認網址
-  } finally {
-    btn.classList.remove('syncing');
-    btn.disabled = false;
-  }
+  } catch(_) {}
 }
 
 // ===== Init =====
@@ -733,13 +708,13 @@ renderRecords();
 <!-- URL Modal -->
 <div class="modal-overlay" id="url-modal">
   <div class="modal-box">
-    <h2>設定 Apps Script 網址</h2>
-    <p>請貼上 Google Apps Script 部署後的網址<br>（開頭為 https://script.google.com/macros/s/…）</p>
+    <h2>Google Sheets 設定</h2>
+    <p>貼上 Apps Script 部署網址後，每次按 + 新增記錄時會自動寫入試算表。<br>（開頭為 https://script.google.com/macros/s/…）</p>
     <input class="modal-url-input" id="modal-url-input" type="url"
            placeholder="https://script.google.com/macros/s/…">
     <div class="modal-actions">
       <button class="modal-cancel" onclick="closeUrlModal()">取消</button>
-      <button class="modal-confirm" onclick="confirmUrl()">確認並同步</button>
+      <button class="modal-confirm" onclick="confirmUrl()">確認</button>
     </div>
   </div>
 </div>
